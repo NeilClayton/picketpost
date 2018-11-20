@@ -1,9 +1,10 @@
 <?php
-
 namespace App\Http\Controllers;
+
 
 use App\Ticket;
 use Illuminate\Http\Request;
+use App\Mailers\AppMailer;
 use App\Category;
 
 class TicketsController extends Controller
@@ -16,7 +17,7 @@ class TicketsController extends Controller
 		return view('tickets.create', compact('categories'));
 	}
 
-	public function store(Request $request/*, AppMailer $mailer*/)
+	public function store(Request $request, AppMailer $mailer)
 	{
 		$this->validate($request, [
 			'title'		=> 'required',
@@ -36,8 +37,7 @@ class TicketsController extends Controller
 		]);
 
 		$ticket->save();
-		//TODO: Uncomment when app mailer is created
-		//$mailer->sendTicketInformation(Auth::user(), $ticket);
+		$mailer->sendTicketInformation(\Auth::user(), $ticket);
 		return redirect()->back()->with("status", "A ticket with ID: #$ticket->ticket_id has been opened.");
 	}
 
